@@ -1,0 +1,89 @@
+table users {
+  id UUID [primary key]
+  name string
+  email string
+  password string
+  created_at timestamp
+  updated_at timestamp
+}
+
+table packages {
+  id UUID [primary key]
+  name string
+  description text
+  max_employees_count int [null]
+  price_per_period_in_rp int
+  period enum
+  created_at timestamp
+  updated_at timestamp
+}
+
+table employees{
+  id UUID [primary key]
+  name string
+  email string
+  password string
+  user_id UUID [ref: > users.id]
+  office_id UUID [ref: > offices.id]
+  position_id UUID [ref: > positions.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+table offices {
+  id UUID [primary key]
+  name string
+  lat double
+  lng double
+  max_radius_attendance_in_meter int
+  max_attendance_in_hour string
+  created_at timestamp
+  updated_at timestamp
+}
+
+table attendances{
+  id UUID [primary key]
+  employee_id UUID [ref : > employees.id]
+  description text [null]
+  type enum(IN,OUT)
+  is_ontime bool
+  is_in_office bool
+  lat double
+  lng double
+  present_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+table leave_aplications{
+  id UUID [primary key]
+  employee_id UUID [ref : > employees.id]
+  description text [null]
+  image_path string [null]
+  type enum(SICK, GENERAL)
+  started_at timestamp
+  ended_at timestamp
+  status enum(DRAFT,WAITING_FOR_APPROVAL, APPROVED)
+  created_at timestamp
+  updated_at timestamp
+}
+
+table positions{
+  id UUID [primary key]
+  name string
+  created_at timestamp
+  updated_at timestamp
+}
+
+table position_permissions{
+  position_id UUID [ref: < positions.id]
+  permition_id UUID [ref: < permissions.id]
+}
+
+table permissions{
+  id UUID [primary key]
+  action string
+  module string
+  created_at timestamp
+  updated_at timestamp
+}
