@@ -18,7 +18,6 @@ return new class extends Migration
             $table->double('lng');
             $table->integer('max_radius_attendance_in_meter');
             $table->string('max_attendance_in_hour');
-            $table->foreignIdFor(\App\Models\Position::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
