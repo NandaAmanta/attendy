@@ -21,6 +21,11 @@ class Attendance extends Model
         'image_path',
     ];
 
+    protected $casts = [
+        'is_ontime' => 'boolean',
+        'is_in_office' => 'boolean',
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

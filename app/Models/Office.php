@@ -18,6 +18,19 @@ class Office extends Model
         'user_id',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->user_id = get_user_id_from_auth_user();
+        });
+
+        static::updating(function ($model) {
+            $model->user_id = get_user_id_from_auth_user();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
