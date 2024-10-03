@@ -7,6 +7,13 @@ table users {
   updated_at timestamp
 }
 
+table user_packages{
+  id UUID [primary key]
+  user_id [ref: < users.id]
+  package_id [ref: < packages.id]
+  expired_at timestamp
+}
+
 table packages {
   id UUID [primary key]
   name string
@@ -22,6 +29,8 @@ table employees{
   id UUID [primary key]
   name string
   email string
+  phone_number string
+  address string
   password string
   user_id UUID [ref: > users.id]
   office_id UUID [ref: > offices.id]
@@ -44,7 +53,7 @@ table offices {
 table attendances{
   id UUID [primary key]
   employee_id UUID [ref : > employees.id]
-  description text [null]
+  note text [null]
   type enum(IN,OUT)
   is_ontime bool
   is_in_office bool
