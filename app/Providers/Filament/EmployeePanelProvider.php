@@ -25,6 +25,7 @@ class EmployeePanelProvider extends PanelProvider
         return $panel
             ->id('employee')
             ->path('employee')
+            ->authGuard('employee_web')
             ->colors([
                 'primary' => Color::Amber,
             ])

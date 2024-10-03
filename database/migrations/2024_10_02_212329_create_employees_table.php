@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Position::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(\App\Models\Office::class)->nullable()->constrained()->nullOnDelete();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
