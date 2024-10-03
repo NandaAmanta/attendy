@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Consts\Action;
+use App\Consts\Module;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class Employee extends Model implements FilamentUser
 {
     use HasFactory;
 
@@ -33,5 +37,18 @@ class Employee extends Model
     public function position()
     {
         return $this->belongsTo(Position::class);
+    }
+
+    public function hasPermissionTo(Action $action, Module $module): bool
+    {
+        return $this->position->permissions
+            ->where('action', $action->value)
+            ->where('module', $module->value)
+            ->exists();
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
     }
 }
