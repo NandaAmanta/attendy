@@ -13,6 +13,10 @@ class Position extends Model
         'name',
     ];
 
+    protected $casts = [
+        'permissions' => 'array',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -28,6 +32,6 @@ class Position extends Model
 
     public function permissions()
     {
-        return $this->belongsToMany(Permission::class);
+        return $this->belongsToMany(Permission::class, 'position_permissions');
     }
 }

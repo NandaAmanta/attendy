@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class PositionResource extends Resource
 {
@@ -23,12 +24,15 @@ class PositionResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Select::make('permissions')
-                    ->relationship('permissions', 'name')
+                    ->relationship()
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->module} - {$record->action}")
                     ->multiple()
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->columnSpanFull(),
             ]);
     }
 
