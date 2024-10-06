@@ -12,12 +12,25 @@ class LeaveApplication extends Model
     protected $fillable = [
         'employee_id',
         'type',
-        'start_date',
-        'end_date',
+        'start_at',
+        'end_at',
         'description',
         'status',
         'image_path',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->employee_id = get_user_id_from_auth_user();
+        });
+
+        static::updating(function ($model) {
+            $model->employee_id = get_user_id_from_auth_user();
+        });
+    }
 
     public function employee()
     {
