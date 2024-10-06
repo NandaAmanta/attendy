@@ -4,8 +4,10 @@ namespace App\Filament\Owner\Resources;
 
 use App\Filament\Owner\Resources\OfficeResource\Pages;
 use App\Models\Office;
+use Dotswan\MapPicker\Fields\Map;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,13 +24,43 @@ class OfficeResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('lat')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->live(),
                 Forms\Components\TextInput::make('lng')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->live(),
+                Map::make('location')
+                    ->label('Location')
+                    ->columnSpanFull()
+                    ->defaultLocation(latitude: -8.565044123362467, longitude: 115.31930208206178)
+                    ->afterStateUpdated(function (Set $set, ?array $state): void {
+                        $set('lat', $state['lat']);
+                        $set('lng', $state['lng']);
+                    })
+                    ->extraStyles([
+                        'min-height: 100vh',
+                        'border-radius: 10px',
+                    ])
+                    ->liveLocation()
+                    ->showMarker()
+                    ->markerColor('#22c55eff')
+                    ->showFullscreenControl()
+                    ->showZoomControl()
+                    ->draggable()
+                    ->tilesUrl('https://tile.openstreetmap.de/{z}/{x}/{y}.png')
+                    ->zoom(15)
+                    ->detectRetina()
+                    ->showMyLocationButton()
+                    ->extraTileControl([])
+                    ->extraControl([
+                        'zoomDelta' => 1,
+                        'zoomSnap' => 2,
+                    ]),
                 Forms\Components\TextInput::make('max_radius_attendance_in_meter')
                     ->required()
                     ->numeric(),

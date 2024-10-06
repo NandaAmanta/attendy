@@ -18,6 +18,18 @@ class Office extends Model
         'user_id',
     ];
 
+    protected $appends = [
+        'location',
+    ];
+
+    public function getLocationAttribute()
+    {
+        return [
+            'lat' => $this->lat,
+            'lng' => $this->lng,
+        ];
+    }
+
     protected static function boot()
     {
         parent::boot();
