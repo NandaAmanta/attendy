@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeResource extends Resource
 {
@@ -121,16 +122,19 @@ class EmployeeResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::UPDATE, Module::EMPLOYEE);
+        return logged_in_employee_has_permission(Action::UPDATE, Module::EMPLOYEE)
+            && $record->user_id == Auth::user()->user_id;
     }
 
     public static function canView(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::READ, Module::EMPLOYEE);
+        return logged_in_employee_has_permission(Action::READ, Module::EMPLOYEE)
+        && $record->user_id == Auth::user()->user_id;
     }
 
     public static function canDelete(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::DELETE, Module::EMPLOYEE);
+        return logged_in_employee_has_permission(Action::DELETE, Module::EMPLOYEE)
+        && $record->user_id == Auth::user()->user_id;
     }
 }

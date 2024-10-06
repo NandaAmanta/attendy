@@ -2,6 +2,8 @@
 
 namespace App\Filament\Employee\Resources;
 
+use App\Consts\Action;
+use App\Consts\Module;
 use App\Filament\Employee\Resources\OfficeResource\Pages;
 use App\Models\Office;
 use Filament\Forms;
@@ -9,6 +11,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class OfficeResource extends Resource
 {
@@ -41,6 +46,7 @@ class OfficeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (EloquentBuilder $query) => $query->where('user_id', FacadesAuth::user()->user_id))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -82,5 +88,33 @@ class OfficeResource extends Resource
             'create' => Pages\CreateOffice::route('/create'),
             'edit' => Pages\EditOffice::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        return logged_in_employee_has_permission(Action::READ, Module::EMPLOYEE);
+    }
+
+    public static function canCreate(): bool
+    {
+        return logged_in_employee_has_permission(Action::CREATE, Module::EMPLOYEE);
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return logged_in_employee_has_permission(Action::UPDATE, Module::EMPLOYEE)
+            && $record->user_id == FacadesAuth::user()->user_id;
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return logged_in_employee_has_permission(Action::READ, Module::EMPLOYEE)
+        && $record->user_id == FacadesAuth::user()->user_id;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return logged_in_employee_has_permission(Action::DELETE, Module::EMPLOYEE)
+        && $record->user_id == FacadesAuth::user()->user_id;
     }
 }

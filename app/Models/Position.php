@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Position extends Model
 {
@@ -11,10 +12,6 @@ class Position extends Model
 
     protected $fillable = [
         'name',
-    ];
-
-    protected $casts = [
-        'permissions' => 'array',
     ];
 
     protected static function boot()
@@ -30,7 +27,7 @@ class Position extends Model
         });
     }
 
-    public function permissions()
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'position_permissions');
     }
