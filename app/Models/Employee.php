@@ -7,9 +7,10 @@ use App\Consts\Module;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 
-class Employee extends Model implements FilamentUser
+class Employee extends Authenticatable implements FilamentUser
 {
     use HasFactory;
 
@@ -30,10 +31,15 @@ class Employee extends Model implements FilamentUser
 
         static::creating(function ($model) {
             $model->user_id = get_user_id_from_auth_user();
+            $model->password = Hash::make($model->password);
         });
 
         static::updating(function ($model) {
             $model->user_id = get_user_id_from_auth_user();
+            // check if password was changed
+            if ($model->isDirty('password')) {
+                $model->password = Hash::make($model->password);
+            }
         });
     }
 
@@ -54,10 +60,11 @@ class Employee extends Model implements FilamentUser
 
     public function hasPermissionTo(Action $action, Module $module): bool
     {
+
         return $this->position->permissions
             ->where('action', $action->value)
             ->where('module', $module->value)
-            ->exists();
+            ->isNotEmpty();
     }
 
     public function canAccessPanel(Panel $panel): bool
