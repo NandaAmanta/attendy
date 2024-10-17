@@ -67,6 +67,14 @@ class OfficeResource extends Resource
                 Forms\Components\DateTimePicker::make('max_attendance_in_hour')
                     ->required()
                     ->date(false),
+                Forms\Components\DateTimePicker::make('min_attendance_out_hour')
+                    ->required()
+                    ->date(false),
+                Forms\Components\TextInput::make('time_offset_in_hour')
+                    ->numeric()
+                    ->required()
+                    ->maxLength(255),
+
             ]);
     }
 
@@ -77,6 +85,10 @@ class OfficeResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('max_attendance_in_hour')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('min_attendance_out_hour')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('time_offset_in_hour')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

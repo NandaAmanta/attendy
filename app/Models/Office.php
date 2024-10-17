@@ -16,6 +16,8 @@ class Office extends Model
         'max_radius_attendance_in_meter',
         'max_attendance_in_hour',
         'user_id',
+        'time_offset_in_hour',
+        'min_attendance_out_hour',
     ];
 
     protected $appends = [

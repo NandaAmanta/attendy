@@ -14,12 +14,13 @@ class AttendanceService
 
     public function attendance($data): void
     {
+        $type = $this->getCurrentAttendanceType();
         Attendance::create([
             'employee_id' => Auth::guard('employee_web')->user()->id,
-            'type' => $this->getCurrentAttendanceType()->value,
+            'type' => $type->value,
             'present_at' => now(),
             'is_in_office' => $this->isInOffice($data['lat'], $data['lng']),
-            'is_ontime' => $this->isOntime(),
+            'is_ontime' => $this->isOntime($type),
             'lat' => $data['lat'],
             'lng' => $data['lng'],
             'image_path' => $this->storeSelfie($data['image_path']),
@@ -80,11 +81,31 @@ class AttendanceService
      *
      * @return bool true if the current time is within the allowed hours, false otherwise.
      */
-    private function isOntime(): bool
+    private function isOntime(AttendanceType $type): bool
     {
+        $office = Auth::guard('employee_web')
+            ->user()
+            ->office;
 
-        $officeMaxAttendanceHour = Auth::guard('employee_web')->user()->office->max_attendance_in_hour ?? null;
+        if ($type == AttendanceType::IN) {
+            $officeMaxAttendanceHour = $office->max_attendance_in_hour ?? null;
 
-        return $officeMaxAttendanceHour ? now()->diffInHours(now()->startOfDay()) < $officeMaxAttendanceHour : true;
+            return now()
+                ->setHour((int) substr($officeMaxAttendanceHour, 0, 2))
+                ->setMinute((int) substr($officeMaxAttendanceHour, 3, 2))
+                ->setSecond((int) substr($officeMaxAttendanceHour, 6, 2))
+                ->addHours(($office->time_offset_in_hour ?? 0) * -1)
+                ->gte(now());
+        } else {
+            $officeMinAttendanceHour = $office->min_attendance_out_hour ?? null;
+
+            return now()
+                ->setHour((int) substr($officeMinAttendanceHour, 0, 2))
+                ->setMinute((int) substr($officeMinAttendanceHour, 3, 2))
+                ->setSecond((int) substr($officeMinAttendanceHour, 6, 2))
+                ->addHours(($office->time_offset_in_hour ?? 0) * -1)
+                ->lte(now());
+        }
+
     }
 }
