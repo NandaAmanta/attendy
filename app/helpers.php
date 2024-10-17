@@ -16,7 +16,7 @@ if (! function_exists('logged_in_employee_has_permission')) {
     function logged_in_employee_has_permission(Action $action, Module $module): bool
     {
         return Employee::query()
-            ->where('user_id', Auth::user()->id)
+            ->where('user_id', Auth::guard('employee_web')->user()->id)
             ->firstOrFail()
             ->hasPermissionTo($action, $module);
     }
@@ -33,5 +33,26 @@ if (! function_exists('get_user_id_from_auth_user')) {
     function get_user_id_from_auth_user(): int
     {
         return is_null(Auth::user()->user_id) ? Auth::user()->id : Auth::user()->user_id;
+    }
+}
+
+if (! function_exists('haversineGreatCircleDistance')) {
+    function haversine_great_circle_distance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $radius, $earthRadius = 6371000): bool
+    {
+        // Convert from degrees to radians
+        $latFrom = deg2rad($latitudeFrom);
+        $lonFrom = deg2rad($longitudeFrom);
+        $latTo = deg2rad($latitudeTo);
+        $lonTo = deg2rad($longitudeTo);
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+        $result = $angle * $earthRadius;
+
+        return $result <= $radius;
     }
 }
