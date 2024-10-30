@@ -9,7 +9,6 @@ use App\Consts\Module;
 use App\Filament\Employee\Resources\LeaveApplicationResource\Pages;
 use App\Models\LeaveApplication;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -42,13 +41,6 @@ class LeaveApplicationResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('image_path')
                     ->image(),
-                Select::make('status')
-                    ->required()
-                    ->options([
-                        LeaveStatus::DRAFT->value => 'Draft',
-                        LeaveStatus::WAITING_FOR_APPROVAL->value => 'Submitted / Waiting for Approval',
-                    ])
-                    ->disabled(fn ($record): bool => ! is_null($record) && $record->status !== LeaveStatus::DRAFT->value),
             ]);
     }
 
@@ -70,7 +62,7 @@ class LeaveApplicationResource extends Resource
                     ->badge()
                     ->color(function (Model $record): string {
                         return match ($record->status) {
-                            LeaveStatus::DRAFT->value => 'grey',
+                            LeaveStatus::DRAFT->value => 'gray',
                             LeaveStatus::WAITING_FOR_APPROVAL->value => 'warning',
                             LeaveStatus::APPROVED->value => 'success',
                             LeaveStatus::REJECTED->value => 'danger',
@@ -134,29 +126,28 @@ class LeaveApplicationResource extends Resource
 
     public static function canAccess(): bool
     {
-        return logged_in_employee_has_permission(Action::READ, Module::EMPLOYEE);
+        return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION);
     }
 
     public static function canCreate(): bool
     {
-        return logged_in_employee_has_permission(Action::CREATE, Module::EMPLOYEE);
+        return logged_in_employee_has_permission(Action::CREATE, Module::LEAVE_APPLICATION);
     }
 
     public static function canEdit(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::UPDATE, Module::EMPLOYEE)
-            && $record->user_id == Auth::user()->user_id;
+        return $record->user_id == Auth::user()->user_id;
     }
 
     public static function canView(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::READ, Module::EMPLOYEE)
+        return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION)
         && $record->user_id == Auth::user()->user_id;
     }
 
     public static function canDelete(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::DELETE, Module::EMPLOYEE)
+        return logged_in_employee_has_permission(Action::DELETE, Module::LEAVE_APPLICATION)
         && $record->user_id == Auth::user()->user_id;
     }
 }

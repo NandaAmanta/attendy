@@ -6,6 +6,7 @@ use App\Consts\LeaveStatus;
 use App\Filament\Employee\Resources\LeaveApplicationResource;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Colors\Color;
 
 class CreateLeaveApplication extends CreateRecord
 {
@@ -14,7 +15,9 @@ class CreateLeaveApplication extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            $this->getCreateFormAction(),
+            $this->getCreateFormAction()
+                ->color(Color::Green)
+                ->label('Submit'),
             $this->getCreateFormDraftAction(),
             $this->getCancelFormAction(),
         ];
@@ -23,8 +26,7 @@ class CreateLeaveApplication extends CreateRecord
     protected function getCreateFormDraftAction(): Action
     {
         return Action::make('draft')
-            ->label(__('filament-panels::resources/pages/create-record.form.actions.create.label'))
-            ->color('secondary')
+            ->label('Draft')
             ->action('createDraft');
     }
 
