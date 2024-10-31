@@ -1,12 +1,9 @@
 <?php
 
-namespace App\Filament\Employee\Resources;
+namespace App\Filament\Owner\Resources;
 
-use App\Consts\Action;
 use App\Consts\LeaveStatus;
-use App\Consts\LeaveType;
-use App\Consts\Module;
-use App\Filament\Employee\Resources\LeaveApplicationResource\Pages;
+use App\Filament\Owner\Resources\LeaveApplicationResource\Pages;
 use App\Models\LeaveApplication;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,7 +12,6 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action as ActionsAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class LeaveApplicationResource extends Resource
 {
@@ -29,17 +25,12 @@ class LeaveApplicationResource extends Resource
             ->schema([
                 Forms\Components\Select::make('employee_id')
                     ->relationship('employee', 'name')
-                    ->default(get_user_id_from_auth_user())
                     ->preload()
                     ->disabled()
                     ->required(),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        LeaveType::GENERAL->value => 'General',
-                        LeaveType::SICK->value => 'Sick',
-                    ])
+                Forms\Components\TextInput::make('type')
                     ->required(),
                 Forms\Components\DateTimePicker::make('start_at')
                     ->required(),
@@ -59,13 +50,13 @@ class LeaveApplicationResource extends Resource
                 Tables\Columns\TextColumn::make('employee.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('description'),
                 Tables\Columns\TextColumn::make('start_at')
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_at')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('image_path'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(function (Model $record): string {
@@ -94,16 +85,12 @@ class LeaveApplicationResource extends Resource
                     ->requiresConfirmation()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->visible(fn ($record): bool => $record->status == LeaveStatus::WAITING_FOR_APPROVAL->value
-                    && logged_in_employee_has_permission(Action::APPROVAL, Module::LEAVE_APPLICATION))
                     ->action(fn (Model $record) => $record->update(['status' => LeaveStatus::APPROVED->value])),
 
                 ActionsAction::make('reject')
                     ->requiresConfirmation()
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
-                    ->visible(fn ($record): bool => $record->status == LeaveStatus::WAITING_FOR_APPROVAL->value
-                    && logged_in_employee_has_permission(Action::APPROVAL, Module::LEAVE_APPLICATION))
                     ->action(fn (Model $record) => $record->update(['status' => LeaveStatus::REJECTED->value])),
 
                 Tables\Actions\EditAction::make(),
@@ -130,32 +117,5 @@ class LeaveApplicationResource extends Resource
             'create' => Pages\CreateLeaveApplication::route('/create'),
             'edit' => Pages\EditLeaveApplication::route('/{record}/edit'),
         ];
-    }
-
-    public static function canAccess(): bool
-    {
-        return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION);
-    }
-
-    public static function canCreate(): bool
-    {
-        return logged_in_employee_has_permission(Action::CREATE, Module::LEAVE_APPLICATION);
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return $record->user_id == Auth::user()->user_id;
-    }
-
-    public static function canView(Model $record): bool
-    {
-        return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION)
-        && $record->user_id == Auth::user()->user_id;
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return logged_in_employee_has_permission(Action::DELETE, Module::LEAVE_APPLICATION)
-        && $record->user_id == Auth::user()->user_id;
     }
 }

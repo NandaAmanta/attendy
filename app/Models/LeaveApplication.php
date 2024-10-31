@@ -24,11 +24,9 @@ class LeaveApplication extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->employee_id = get_user_id_from_auth_user();
-        });
-
-        static::updating(function ($model) {
-            $model->employee_id = get_user_id_from_auth_user();
+            if ($model->employee_id == null) {
+                $model->employee_id = get_user_id_from_auth_user();
+            }
         });
     }
 
