@@ -85,12 +85,14 @@ class LeaveApplicationResource extends Resource
                     ->requiresConfirmation()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
+                    ->visible(fn (Model $record) => $record->status == LeaveStatus::WAITING_FOR_APPROVAL->value)
                     ->action(fn (Model $record) => $record->update(['status' => LeaveStatus::APPROVED->value])),
 
                 ActionsAction::make('reject')
                     ->requiresConfirmation()
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
+                    ->visible(fn (Model $record) => $record->status == LeaveStatus::WAITING_FOR_APPROVAL->value)
                     ->action(fn (Model $record) => $record->update(['status' => LeaveStatus::REJECTED->value])),
 
                 Tables\Actions\EditAction::make(),
