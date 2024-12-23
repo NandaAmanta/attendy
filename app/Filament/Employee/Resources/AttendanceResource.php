@@ -145,19 +145,18 @@ class AttendanceResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return logged_in_employee_has_permission(ConstsAction::UPDATE, Module::ATTENDANCE)
-            && $record->user_id == Auth::user()->user_id;
+        return logged_in_employee_has_permission(ConstsAction::UPDATE, Module::ATTENDANCE);
     }
 
     public static function canView(Model $record): bool
     {
-        return logged_in_employee_has_permission(ConstsAction::READ, Module::ATTENDANCE)
-        && $record->user_id == Auth::user()->user_id;
+        dd(logged_in_employee_has_permission(ConstsAction::READ, Module::ATTENDANCE));
+
+        return logged_in_employee_has_permission(ConstsAction::READ, Module::ATTENDANCE);
     }
 
     public static function canDelete(Model $record): bool
     {
-        return logged_in_employee_has_permission(ConstsAction::DELETE, Module::ATTENDANCE)
-        && $record->user_id == Auth::user()->user_id;
+        return logged_in_employee_has_permission(ConstsAction::DELETE, Module::ATTENDANCE);
     }
 }

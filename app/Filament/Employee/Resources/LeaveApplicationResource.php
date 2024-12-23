@@ -149,13 +149,11 @@ class LeaveApplicationResource extends Resource
 
     public static function canView(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION)
-        && $record->user_id == Auth::user()->user_id;
+        return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION);
     }
 
     public static function canDelete(Model $record): bool
     {
-        return logged_in_employee_has_permission(Action::DELETE, Module::LEAVE_APPLICATION)
-        && $record->user_id == Auth::user()->user_id;
+        return logged_in_employee_has_permission(Action::DELETE, Module::LEAVE_APPLICATION);
     }
 }
