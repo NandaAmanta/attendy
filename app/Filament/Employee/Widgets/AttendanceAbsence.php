@@ -2,6 +2,8 @@
 
 namespace App\Filament\Employee\Widgets;
 
+use App\Consts\AttendanceType;
+use App\Models\Attendance;
 use App\Service\AttendanceService;
 use Filament\Notifications\Notification;
 use Filament\Widgets\Widget;
@@ -22,6 +24,19 @@ class AttendanceAbsence extends Widget
     public function __construct()
     {
         $this->attendanceService = new AttendanceService;
+    }
+
+    public static function canView(): bool
+    {
+        $todayPresentOut = Attendance::query()
+            ->where('employee_id', Auth::guard('employee_web')->user()->id)
+            ->where('type', AttendanceType::OUT->value)
+            ->where('present_at', '>=', now()->startOfDay())
+            ->where('present_at', '<=', now()->endOfDay())
+            ->first()
+            ->present_at ?? null;
+
+        return $todayPresentOut === null;
     }
 
     public function present(array $data): void

@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -56,7 +57,11 @@ class AttendanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->where('employee_id', Auth::guard('employee_web')->user()->id))
+            ->defaultGroup(
+                Group::make('present_at')
+                    ->label('Date')
+                    ->date(), )
+            ->modifyQueryUsing(fn ($query) => $query->whereNot('employee_id', Auth::guard('employee_web')->user()->id))
             ->columns([
                 Tables\Columns\TextColumn::make('no')
                     ->rowIndex(),
