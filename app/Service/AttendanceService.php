@@ -37,7 +37,7 @@ class AttendanceService
         $filename = Str::slug(Auth::user()->name).'_'.time().'.png';
 
         $selfiePath = 'selfie/'.$filename;
-        Storage::put('public/'.$selfiePath, base64_decode($image));
+        Storage::disk('public')->put($selfiePath, base64_decode($image));
 
         return $selfiePath;
     }
@@ -94,7 +94,7 @@ class AttendanceService
                 ->setHour((int) substr($officeMaxAttendanceHour, 0, 2))
                 ->setMinute((int) substr($officeMaxAttendanceHour, 3, 2))
                 ->setSecond((int) substr($officeMaxAttendanceHour, 6, 2))
-                ->addHours(($office->time_offset_in_hour ?? 0) * -1)
+                // ->addHours(($office->time_offset_in_hour ?? 0) * -1)
                 ->gte(now());
         } else {
             $officeMinAttendanceHour = $office->min_attendance_out_hour ?? null;
@@ -103,7 +103,7 @@ class AttendanceService
                 ->setHour((int) substr($officeMinAttendanceHour, 0, 2))
                 ->setMinute((int) substr($officeMinAttendanceHour, 3, 2))
                 ->setSecond((int) substr($officeMinAttendanceHour, 6, 2))
-                ->addHours(($office->time_offset_in_hour ?? 0) * -1)
+                // ->addHours(($office->time_offset_in_hour ?? 0) * -1)
                 ->lte(now());
         }
 

@@ -144,7 +144,7 @@ class LeaveApplicationResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return $record->user_id == Auth::user()->user_id;
+        return $record->employee_id == Auth::user()->user_id;
     }
 
     public static function canView(Model $record): bool

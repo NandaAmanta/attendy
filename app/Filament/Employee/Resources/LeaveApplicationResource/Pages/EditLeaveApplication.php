@@ -4,6 +4,7 @@ namespace App\Filament\Employee\Resources\LeaveApplicationResource\Pages;
 
 use App\Consts\LeaveStatus;
 use App\Filament\Employee\Resources\LeaveApplicationResource;
+use App\Models\LeaveApplication;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -25,7 +26,8 @@ class EditLeaveApplication extends EditRecord
                         ->title('Success to submit the leave aplication')
                         ->body('Please wait a moment until your aplication approved')
                         ->send();
-                }),
+                })
+                ->hidden(fn (LeaveApplication $record) => $record->status !== LeaveStatus::DRAFT->value),
             Actions\DeleteAction::make(),
         ];
     }
