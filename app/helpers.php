@@ -16,7 +16,7 @@ if (! function_exists('logged_in_employee_has_permission')) {
     function logged_in_employee_has_permission(Action $action, Module $module): bool
     {
         return Employee::query()
-            ->where('user_id', Auth::guard('employee_web')->user()->id)
+            ->where('id', Auth::guard('employee_web')->user()->id)
             ->firstOrFail()
             ->hasPermissionTo($action, $module);
     }

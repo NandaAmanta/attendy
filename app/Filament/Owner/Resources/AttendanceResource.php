@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 
 class AttendanceResource extends Resource
@@ -21,34 +22,39 @@ class AttendanceResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->defaultGroup(
+                Group::make('present_at')
+                    ->label('Date')
+                    ->date(),
+            )
             ->schema([
                 Forms\Components\Select::make('employee_id')
-                    ->relationship('employee', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+            ->relationship('employee', 'name')
+            ->searchable()
+            ->preload()
+            ->required(),
                 Forms\Components\Textarea::make('note')
-                    ->columnSpanFull(),
+            ->columnSpanFull(),
                 Forms\Components\Select::make('type')
-                    ->options([
-                        AttendanceType::IN->value => 'In',
-                        AttendanceType::OUT->value => 'Out',
-                    ])
-                    ->required(),
+            ->options([
+                AttendanceType::IN->value => 'In',
+                AttendanceType::OUT->value => 'Out',
+            ])
+            ->required(),
                 Forms\Components\Toggle::make('is_ontime')
-                    ->required(),
+            ->required(),
                 Forms\Components\Toggle::make('is_in_office')
-                    ->required(),
+            ->required(),
                 Forms\Components\TextInput::make('lat')
-                    ->required()
-                    ->numeric(),
+            ->required()
+            ->numeric(),
                 Forms\Components\TextInput::make('lng')
-                    ->required()
-                    ->numeric(),
+            ->required()
+            ->numeric(),
                 Forms\Components\DateTimePicker::make('present_at')
-                    ->required(),
+            ->required(),
                 Forms\Components\FileUpload::make('image_path')
-                    ->image(),
+            ->image(),
             ]);
     }
 
