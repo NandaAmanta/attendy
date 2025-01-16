@@ -61,7 +61,12 @@ class AttendanceResource extends Resource
                 Group::make('present_at')
                     ->label('Date')
                     ->date(), )
-            ->modifyQueryUsing(fn ($query) => $query->whereNot('employee_id', Auth::guard('employee_web')->user()->id))
+            ->modifyQueryUsing(fn ($query) => $query
+                ->whereNot('employee_id', Auth::guard('employee_web')->user()->id)
+                ->whereHas('employee', function ($query) {
+                    return $query->where('user_id', Auth::guard('employee_web')->user()->user_id);
+                })
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('no')
                     ->rowIndex(),
@@ -145,12 +150,20 @@ class AttendanceResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
+        $ownerId = $record->employee->user_id ?? null;
+        if ($ownerId != Auth::guard('employee_web')->user()->user_id) {
+            return false;
+        }
+
         return logged_in_employee_has_permission(ConstsAction::UPDATE, Module::ATTENDANCE);
     }
 
     public static function canView(Model $record): bool
     {
-        dd(logged_in_employee_has_permission(ConstsAction::READ, Module::ATTENDANCE));
+        $ownerId = $record->employee->user_id ?? null;
+        if ($ownerId != Auth::guard('employee_web')->user()->user_id) {
+            return false;
+        }
 
         return logged_in_employee_has_permission(ConstsAction::READ, Module::ATTENDANCE);
     }

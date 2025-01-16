@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeResource extends Resource
 {
@@ -50,9 +51,13 @@ class EmployeeResource extends Resource
             ]);
     }
 
+    /**
+     * Gets the table definition for the resource.
+     */
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->where('user_id', Auth::guard('web')->user()->id))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),

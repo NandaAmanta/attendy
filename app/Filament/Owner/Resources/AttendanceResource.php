@@ -56,6 +56,7 @@ class AttendanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+
             ->defaultGroup(
                 Group::make('present_at')
                     ->label('Date')

@@ -53,6 +53,9 @@ class LeaveApplicationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->whereHas('employee', function ($q) {
+                return $q->where('user_id', Auth::guard('employee_web')->user()->user_id);
+            }))
             ->columns([
                 Tables\Columns\TextColumn::make('no')
                     ->rowIndex(),
@@ -139,21 +142,37 @@ class LeaveApplicationResource extends Resource
 
     public static function canCreate(): bool
     {
+
         return logged_in_employee_has_permission(Action::CREATE, Module::LEAVE_APPLICATION);
     }
 
     public static function canEdit(Model $record): bool
     {
+        $ownerId = $record->employee->user_id ?? null;
+        if ($ownerId != Auth::guard('employee_web')->user()->user_id) {
+            return false;
+        }
+
         return $record->employee_id == Auth::user()->user_id;
     }
 
     public static function canView(Model $record): bool
     {
+        $ownerId = $record->employee->user_id ?? null;
+        if ($ownerId != Auth::guard('employee_web')->user()->user_id) {
+            return false;
+        }
+
         return logged_in_employee_has_permission(Action::READ, Module::LEAVE_APPLICATION);
     }
 
     public static function canDelete(Model $record): bool
     {
+        $ownerId = $record->employee->user_id ?? null;
+        if ($ownerId != Auth::guard('employee_web')->user()->user_id) {
+            return false;
+        }
+
         return logged_in_employee_has_permission(Action::DELETE, Module::LEAVE_APPLICATION);
     }
 }
